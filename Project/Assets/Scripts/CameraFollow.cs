@@ -8,23 +8,24 @@ public class CameraFollow : MonoBehaviour
 	public float xSmooth = 8f;		// How smoothly the camera catches up with it's target movement in the x axis.
 	public float ySmooth = 8f;		// How smoothly the camera catches up with it's target movement in the y axis.
 	public Vector2 maxXAndY;		// The maximum x and y coordinates the camera can have.
-	public Vector2 minXAndY;		// The minimum x and y coordinates the camera can have.
+	public Vector2 minXAndY;        // The minimum x and y coordinates the camera can have.
 
+    private Transform player;		// Reference to the player's transform.
+  
 
-	private Transform player;		// Reference to the player's transform.
-
+    //habrá que coger todos los objetos de la escena con el tag "Player" y luego a la hora de asignar uno u otro como target mirar si "hasTurn"
 
 	void Awake ()
 	{
 		// Setting up the reference.
-		player = GameObject.FindGameObjectWithTag("Player").transform;
-	}
+		//player = GameObject.FindGameObjectWithTag("Player").transform;
+    }
 
 
 	bool CheckXMargin()
 	{
 		// Returns true if the distance between the camera and the player in the x axis is greater than the x margin.
-		return Mathf.Abs(transform.position.x - player.position.x) > xMargin;
+		return Mathf.Abs(transform.position.x - player.transform.position.x) > xMargin;
 	}
 
 
@@ -34,17 +35,21 @@ public class CameraFollow : MonoBehaviour
 		return Mathf.Abs(transform.position.y - player.position.y) > yMargin;
 	}
 
+ 
 
-	void FixedUpdate ()
+    void FixedUpdate ()
 	{
 		TrackPlayer();
+        Debug.Log("the target player is " + player.name);
+        //Debug.Log(transform.position);
 	}
 	
 	
 	void TrackPlayer ()
 	{
-		// By default the target x and y coordinates of the camera are it's current x and y coordinates.
-		float targetX = transform.position.x;
+
+        // By default the target x and y coordinates of the camera are it's current x and y coordinates.
+        float targetX = transform.position.x;
 		float targetY = transform.position.y;
 
 		// If the player has moved beyond the x margin...
@@ -64,4 +69,16 @@ public class CameraFollow : MonoBehaviour
 		// Set the camera's position to the target position with the same z component.
 		transform.position = new Vector3(targetX, targetY, transform.position.z);
 	}
-}
+
+
+    public void SetPlayerToFollow(Transform target)
+    {
+        player = target;
+    }
+
+
+
+
+
+
+}//CameraFollow

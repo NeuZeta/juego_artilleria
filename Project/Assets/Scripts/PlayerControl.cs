@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -23,37 +24,90 @@ public class PlayerControl : MonoBehaviour
 	private bool grounded = false;			// Whether or not the player is grounded.
 	private Animator anim;					// Reference to the player's animator component.
 
+    protected float tilt;
+    private List<KeyCode> acciones = new List<KeyCode>();
+    private Transform pivot;
 
-	void Awake()
+    private float axisIncrease;      //Incremento mientras el boton está pulsado
+
+    [HideInInspector]
+    public bool hasTurn = false;
+    
+
+    void Awake()
 	{
 		// Setting up references.
 		groundCheck = transform.Find("groundCheck");
 		anim = GetComponent<Animator>();
+        pivot = transform.Find("pivot");
 	}
 
 
 	void Update()
 	{
 		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.
-		grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));  
+		grounded = Physics2D.Linecast(transform.position, groundCheck.position, 1 << LayerMask.NameToLayer("Ground"));
 
-		// If the jump button is pressed and the player is grounded then the player should jump.
-		if(Input.GetButtonDown("Jump") && grounded)
+        // If the jump button is pressed and the player is grounded then the player should jump.
+        if (Input.GetButtonDown("Jump") && grounded)
 			jump = true;
-	}
 
+
+
+	}
 
 	void FixedUpdate ()
 	{
 		// Cache the horizontal input.
 		float h = Input.GetAxis("Horizontal");
+        
 
-		// The Speed animator parameter is set to the absolute value of the horizontal input.
-		anim.SetFloat("Speed", Mathf.Abs(h));
+        if (h == 0)
+        {
+            if (acciones.Contains(KeyCode.LeftArrow))
+            {
+                if (axisIncrease > -1)
+                {
+                    axisIncrease -= 0.1f;
+                }
+                h = axisIncrease;
+                Debug.Log(h);
+            }
+            else if (acciones.Contains(KeyCode.RightArrow))
+            {
+                if (axisIncrease < 1)
+                {
+                    axisIncrease += 0.1f;
+                }
+                h = axisIncrease;
+                Debug.Log(h);
+            }
+            else
+            {
+                axisIncrease = 0f;
+            }
+        }
 
-		// If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
-		if(h * GetComponent<Rigidbody2D>().velocity.x < maxSpeed)
-			// ... add a force to the player.
+        anim.SetFloat("Speed", Mathf.Abs(h));
+
+        if (acciones.Contains(KeyCode.UpArrow))
+        {
+            tilt += 1.0f;
+        }
+        if (acciones.Contains(KeyCode.DownArrow))
+        {
+            tilt -= 1.0f;
+        }
+
+        tilt = Mathf.Clamp(tilt, 0, 75);
+   
+        if (facingRight)
+        pivot.rotation = Quaternion.Euler(0, 0, tilt);
+        else
+        pivot.rotation = Quaternion.Euler(0, 0, -tilt);
+
+        // If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
+        if (h * GetComponent<Rigidbody2D>().velocity.x < maxSpeed)
 			GetComponent<Rigidbody2D>().AddForce(Vector2.right * h * moveForce);
 
 		// If the player's horizontal velocity is greater than the maxSpeed...
@@ -61,43 +115,36 @@ public class PlayerControl : MonoBehaviour
 			// ... set the player's velocity to the maxSpeed in the x axis.
 			GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Sign(GetComponent<Rigidbody2D>().velocity.x) * maxSpeed, GetComponent<Rigidbody2D>().velocity.y);
 
-		// If the input is moving the player right and the player is facing left...
-		if(h > 0 && !facingRight)
-			// ... flip the player.
-			Flip();
-		// Otherwise if the input is moving the player left and the player is facing right...
-		else if(h < 0 && facingRight)
-			// ... flip the player.
-			Flip();
+        if (h > 0 && !facingRight)
+            Flip();
+        else if (h < 0 && facingRight)
+            Flip();
 
-		// If the player should jump...
+		
 		if(jump)
 		{
-			// Set the Jump animator trigger parameter.
 			anim.SetTrigger("Jump");
 
-			// Play a random jump audio clip.
 			int i = Random.Range(0, jumpClips.Length);
 			AudioSource.PlayClipAtPoint(jumpClips[i], transform.position);
 
-			// Add a vertical force to the player.
 			GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, jumpForce));
 
-			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
 			jump = false;
 		}
-	}
-	
-	
-	void Flip ()
-	{
-		// Switch the way the player is labelled as facing.
-		facingRight = !facingRight;
 
-		// Multiply the player's x local scale by -1.
-		Vector3 theScale = transform.localScale;
+    }
+	
+	
+	public void Flip ()
+	{
+        facingRight = !facingRight;
+
+        tilt = 0;
+
+        Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
-		transform.localScale = theScale;
+		transform.localScale = theScale;  
 	}
 
 
@@ -137,4 +184,65 @@ public class PlayerControl : MonoBehaviour
 			// Otherwise return this index.
 			return i;
 	}
-}
+
+    public void PlayerJump()
+    {
+        if (grounded)
+        jump = true;
+    }
+
+    private void ActualizarAccionDown(KeyCode code)
+    {
+        if (!acciones.Contains(code)) acciones.Add(code);
+    }
+
+    private void ActualizarAccionUp(KeyCode code)
+    {
+        if (acciones.Contains(code)) acciones.Remove(code);
+    }
+
+    public void MueveDerechaDown()
+    {
+        ActualizarAccionDown(KeyCode.RightArrow);
+    }
+
+    public void MueveIzquierdaDown()
+    {
+        ActualizarAccionDown(KeyCode.LeftArrow);
+    }
+
+    public void RotaIzquierdaDown()
+    { 
+        ActualizarAccionDown(KeyCode.UpArrow);
+    }
+
+    public void RotaDerechaDown()
+    {
+        ActualizarAccionDown(KeyCode.DownArrow);
+
+    }
+
+    public void MueveDerechaUp()
+    {
+        ActualizarAccionUp(KeyCode.RightArrow);
+    }
+
+    public void MueveIzquierdaUp()
+    {
+        ActualizarAccionUp(KeyCode.LeftArrow);
+    }
+
+    public void RotaIzquierdaUp()
+    {
+        ActualizarAccionUp(KeyCode.UpArrow);
+    }
+
+    public void RotaDerechaUp()
+    {
+        ActualizarAccionUp(KeyCode.DownArrow);
+    }
+
+
+
+
+} //PlayerControl
