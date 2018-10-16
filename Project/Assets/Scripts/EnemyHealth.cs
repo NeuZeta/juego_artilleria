@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerHealth : MonoBehaviour
+public class EnemyHealth : MonoBehaviour
 {	
 	public float health = 100f;					// The player's health.
 	public float repeatDamagePeriod = 2f;		// How frequently the player can be damaged.
@@ -20,7 +20,7 @@ public class PlayerHealth : MonoBehaviour
 	{
 		// Setting up references.
 		playerControl = GetComponent<PlayerControl>();
-		healthBar = GameObject.Find("HealthBar").GetComponent<SpriteRenderer>();
+		healthBar = GameObject.Find("HealthBar_Enemy").GetComponent<SpriteRenderer>();
 		anim = GetComponent<Animator>();
 
 		// Getting the intial scale of the healthbar (whilst the player has full health).

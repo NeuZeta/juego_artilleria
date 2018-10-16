@@ -75,6 +75,7 @@ public class Gun : MonoBehaviour
         {
             Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, transform.rotation, this.gameObject.transform) as Rigidbody2D;
             bulletInstance.velocity = transform.right.normalized * speed;
+            
 
             targetSpeed = speed = 0;
             attackBar.localScale = Vector3.up * 2 + Vector3.forward;
@@ -84,6 +85,7 @@ public class Gun : MonoBehaviour
         {
             Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, transform.rotation, this.gameObject.transform) as Rigidbody2D;
             bulletInstance.velocity = transform.right.normalized * -speed;
+           
 
             targetSpeed = speed = 0;
             attackBar.localScale = Vector3.up * 2 + Vector3.forward;

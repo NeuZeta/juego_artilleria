@@ -40,7 +40,7 @@ public class CameraFollow : MonoBehaviour
     void FixedUpdate ()
 	{
 		TrackPlayer();
-        Debug.Log("the target player is " + player.name);
+        //Debug.Log("the target player is " + player.name);
         //Debug.Log(transform.position);
 	}
 	

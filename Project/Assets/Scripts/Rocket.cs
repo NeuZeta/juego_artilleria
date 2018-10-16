@@ -4,7 +4,7 @@ using System.Collections;
 public class Rocket : MonoBehaviour 
 {
 	public GameObject explosion;		// Prefab of explosion effect.
-    public string ignoreTag = "Bullet";
+    //public string ignoreTag = "HealthBar";
 
 	void Start () 
 	{        
@@ -25,11 +25,8 @@ public class Rocket : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.name == gameObject.transform.parent.root.name)
-            Debug.Log("He chocado conmigo " + collision.name);
-            Debug.Log(gameObject.transform.root.name);
-
-        if (collision.tag != ignoreTag && collision.name != gameObject.transform.root.name)
+        if (//collision.tag != ignoreTag && 
+            collision.name != gameObject.transform.root.name)
         {
              GameObject explosion = new GameObject("Explosion");
              explosion.transform.position = transform.position;

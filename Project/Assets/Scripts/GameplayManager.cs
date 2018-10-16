@@ -8,8 +8,6 @@ public class GameplayManager : MonoBehaviour {
     public EnemyAI enemy;
     public PlayerControl hero;
 
-    public Rocket rocket;
-
     public GameObject startButton;
     public GameObject attackButton;
     public CameraFollow cameraFollow;
@@ -32,7 +30,7 @@ public class GameplayManager : MonoBehaviour {
     {
         startButton.GetComponent<Button>().enabled = false;
         enemy.hasTurn = true;
-        InvokeRepeating("DecreaseTime", 0, 1);
+        InvokeRepeating ("DecreaseTime", 0, 1);
         SwapTurn();
     }
 
@@ -69,20 +67,6 @@ public class GameplayManager : MonoBehaviour {
         }
     }
 
-
-    void FollowTheRocket()
-    {
-        if (rocket != null)
-        {
-            cameraFollow.SetPlayerToFollow(rocket.transform);
-        }
-    }
-
-
-    public void PauseTimeToSeeTheRocket()
-    {
-
-    }
 
 
 
