@@ -29,18 +29,6 @@ public class Remover : MonoBehaviour
             col.gameObject.SetActive(false);
 			// ... reload the level.
 
-            if (col.gameObject.tag == "Player")
-            {
-                int score = gameplayManager.GetEnemyScore();
-                gameplayManager.SetEnemyScore(score += 1);
-            }
-
-            if (col.gameObject.tag == "Enemy")
-            {
-                int score = gameplayManager.GetHeroScore();
-                gameplayManager.SetHeroScore(score += 1);
-            }
-
 			StartCoroutine("ReloadGame");
 		}
 		else

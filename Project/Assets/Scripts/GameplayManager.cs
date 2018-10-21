@@ -19,8 +19,6 @@ public class GameplayManager : MonoBehaviour {
     private GameObject[] UI;
 
     private const string SELECTED_WEAPON = "Selected Weapon";
-    private const string ENEMY_SCORE = "Enemy Score";
-    private const string HERO_SCORE = "Hero Score";
 
     private void Awake()
     {
@@ -96,24 +94,5 @@ public class GameplayManager : MonoBehaviour {
         return PlayerPrefs.GetInt(SELECTED_WEAPON);
     }
 
-    public void SetEnemyScore(int score)
-    {
-        PlayerPrefs.SetInt(ENEMY_SCORE, score);
-    }
-
-    public int GetEnemyScore()
-    {
-        return PlayerPrefs.GetInt(ENEMY_SCORE);
-    }
-
-    public void SetHeroScore(int score)
-    {
-        PlayerPrefs.SetInt(HERO_SCORE, score);
-    }
-
-    public int GetHeroScore()
-    {
-        return PlayerPrefs.GetInt(HERO_SCORE);
-    }
 
 }//GameplayManager
