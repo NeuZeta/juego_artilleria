@@ -11,16 +11,9 @@ public class CameraFollow : MonoBehaviour
 	public Vector2 minXAndY;        // The minimum x and y coordinates the camera can have.
 
     private Transform player;		// Reference to the player's transform.
+
+    public float cameraSpeed = 10f;
   
-
-    //habrá que coger todos los objetos de la escena con el tag "Player" y luego a la hora de asignar uno u otro como target mirar si "hasTurn"
-
-	void Awake ()
-	{
-		// Setting up the reference.
-		//player = GameObject.FindGameObjectWithTag("Player").transform;
-    }
-
 
 	bool CheckXMargin()
 	{
@@ -35,7 +28,6 @@ public class CameraFollow : MonoBehaviour
 		return Mathf.Abs(transform.position.y - player.position.y) > yMargin;
 	}
 
- 
 
     void FixedUpdate ()
 	{
@@ -66,8 +58,9 @@ public class CameraFollow : MonoBehaviour
 		targetX = Mathf.Clamp(targetX, minXAndY.x, maxXAndY.x);
 		targetY = Mathf.Clamp(targetY, minXAndY.y, maxXAndY.y);
 
-		// Set the camera's position to the target position with the same z component.
-		transform.position = new Vector3(targetX, targetY, transform.position.z);
+        // Set the camera's position to the target position with the same z component.
+        //transform.position = new Vector3(targetX, targetY, transform.position.z);
+        transform.position = Vector3.Lerp(transform.position, new Vector3(targetX, targetY, transform.position.z), cameraSpeed * Time.deltaTime);
 	}
 
 

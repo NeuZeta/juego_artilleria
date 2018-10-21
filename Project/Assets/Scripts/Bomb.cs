@@ -20,7 +20,7 @@ public class Bomb : MonoBehaviour
 	{
 		// Setting up references.
 		explosionFX = GameObject.FindGameObjectWithTag("ExplosionFX").GetComponent<ParticleSystem>();
-		pickupSpawner = GameObject.Find("pickupManager").GetComponent<PickupSpawner>();
+		//pickupSpawner = GameObject.Find("pickupManager").GetComponent<PickupSpawner>();
 		if(GameObject.FindGameObjectWithTag("Player"))
 			layBombs = GameObject.FindGameObjectWithTag("Player").GetComponent<LayBombs>();
 	}
@@ -29,7 +29,7 @@ public class Bomb : MonoBehaviour
 	{
 		
 		// If the bomb has no parent, it has been laid by the player and should detonate.
-		if(transform.root == transform)
+		//if(transform.root == transform)
 			StartCoroutine(BombDetonation());
 	}
 
@@ -49,37 +49,46 @@ public class Bomb : MonoBehaviour
 
 	public void Explode()
 	{
-		
-		// The player is now free to lay bombs when he has them.
-		layBombs.bombLaid = false;
 
-		// Make the pickup spawner start to deliver a new pickup.
-		pickupSpawner.StartCoroutine(pickupSpawner.DeliverPickup());
+        // Find all the colliders on the Enemies layer within the bombRadius.
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, bombRadius, 1 << LayerMask.NameToLayer("Player"));
 
-		// Find all the colliders on the Enemies layer within the bombRadius.
-		Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, bombRadius, 1 << LayerMask.NameToLayer("Enemies"));
+        // For each collider...
+        foreach (Collider2D en in enemies)
+        {
+            // Check if it has a rigidbody (since there is only one per enemy, on the parent).
+            Rigidbody2D rb = en.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                if (rb.name == "hero")
+                {
+                    if (rb.gameObject.GetComponent<PlayerHealth>().health > 0)
+                    {
+                        rb.gameObject.GetComponent<PlayerHealth>().health -= 25;
+                        rb.gameObject.GetComponent<PlayerHealth>().UpdateHealth();
+                    }
+                }
+                if (rb.name == "Enemy")
+                {
+                    if (rb.gameObject.GetComponent<EnemyHealth>().health > 0)
+                    {
+                        rb.gameObject.GetComponent<EnemyHealth>().health -= 25;
+                        rb.gameObject.GetComponent<EnemyHealth>().UpdateHealth();
+                    }
+                }
 
-		// For each collider...
-		foreach(Collider2D en in enemies)
-		{
-			// Check if it has a rigidbody (since there is only one per enemy, on the parent).
-			Rigidbody2D rb = en.GetComponent<Rigidbody2D>();
-			if(rb != null && rb.tag == "Enemy")
-			{
-				// Find the Enemy script and set the enemy's health to zero.
-				rb.gameObject.GetComponent<Enemy>().HP = 0;
 
-				// Find a vector from the bomb to the enemy.
-				Vector3 deltaPos = rb.transform.position - transform.position;
+                // Find a vector from the bomb to the enemy.
+                Vector3 deltaPos = rb.transform.position - transform.position;
 
-				// Apply a force in this direction with a magnitude of bombForce.
-				Vector3 force = deltaPos.normalized * bombForce;
-				rb.AddForce(force);
-			}
-		}
+                // Apply a force in this direction with a magnitude of bombForce.
+                Vector3 force = deltaPos.normalized * bombForce;
+                rb.AddForce(force);
+            }
+        }
 
-		// Set the explosion effect's position to the bomb's position and play the particle system.
-		explosionFX.transform.position = transform.position;
+        //Set the explosion effect's position to the bomb's position and play the particle system.
+        explosionFX.transform.position = transform.position;
 		explosionFX.Play();
 
 		// Instantiate the explosion prefab.
@@ -91,4 +100,29 @@ public class Bomb : MonoBehaviour
 		// Destroy the bomb.
 		Destroy (gameObject);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
 }

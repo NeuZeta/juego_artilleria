@@ -5,12 +5,13 @@ using System.Collections;
 public class Remover : MonoBehaviour
 {
 	public GameObject splash;
+    public GameplayManager gameplayManager;
 
 
 	void OnTriggerEnter2D(Collider2D col)
 	{
 		// If the player hits the trigger...
-		if(col.gameObject.tag == "Player")
+		if(col.gameObject.tag == "Player" || col.gameObject.tag == "Enemy")
 		{
 			// .. stop the camera tracking the player
 			GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraFollow>().enabled = false;
@@ -23,9 +24,23 @@ public class Remover : MonoBehaviour
 
 			// ... instantiate the splash where the player falls in.
 			Instantiate(splash, col.transform.position, transform.rotation);
-			// ... destroy the player.
-			Destroy (col.gameObject);
+            // ... destroy the player.
+            //Destroy (col.gameObject);
+            col.gameObject.SetActive(false);
 			// ... reload the level.
+
+            if (col.gameObject.tag == "Player")
+            {
+                int score = gameplayManager.GetEnemyScore();
+                gameplayManager.SetEnemyScore(score += 1);
+            }
+
+            if (col.gameObject.tag == "Enemy")
+            {
+                int score = gameplayManager.GetHeroScore();
+                gameplayManager.SetHeroScore(score += 1);
+            }
+
 			StartCoroutine("ReloadGame");
 		}
 		else
@@ -45,4 +60,7 @@ public class Remover : MonoBehaviour
 		// ... and then reload the level.
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
 	}
+
+
+
 }

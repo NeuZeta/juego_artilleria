@@ -32,7 +32,7 @@ public class EnemyAI : PlayerControl {
 
     }
 
-	void LateUpdate () {
+	void Update () {
 		
         if (hasTurn)
         {
@@ -48,9 +48,8 @@ public class EnemyAI : PlayerControl {
             }
             else
             {
-                gun.Fire(CalculaVelocidad(hero, shootAngle));
-                RotaDerechaUp();
-                RotaIzquierdaUp();
+                StartCoroutine(WaitALittleToShoot());
+                
             }
         }
         else
@@ -60,7 +59,14 @@ public class EnemyAI : PlayerControl {
 
 	}
 
-
+    IEnumerator WaitALittleToShoot()
+    {
+        float timeToWait = Random.Range(1f, 2f);
+        yield return new WaitForSeconds(timeToWait);
+        gun.Fire(CalculaVelocidad(hero, shootAngle));
+        RotaDerechaUp();
+        RotaIzquierdaUp();
+    }
 
 
 

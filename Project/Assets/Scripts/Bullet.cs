@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Rocket : MonoBehaviour 
+public class Bullet: MonoBehaviour 
 {
 	public GameObject explosion;		// Prefab of explosion effect.
     public string ignoreTag = "Bullet";
@@ -30,7 +30,7 @@ public class Rocket : MonoBehaviour
         {
              GameObject explosion = new GameObject("Explosion");
              explosion.transform.position = transform.position;
-             explosion.tag = "ExplosionFX";
+             explosion.tag = "ExplosionFX_bullet";
              Destroy(explosion, 0.5f);
              CircleCollider2D explosionRadius = explosion.AddComponent<CircleCollider2D>();
              explosionRadius.radius = 2.5f;

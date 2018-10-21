@@ -3,7 +3,10 @@ using System.Collections;
 
 public class Gun : MonoBehaviour
 {
-	public Rigidbody2D rocket;              // Prefab of the rocket.
+    public GameplayManager gameManager;
+    public Rigidbody2D[] weapons;
+
+    //public Rigidbody2D rocket;              // Prefab of the rocket.
     public Sprite attackBarSprite;
 
     private enum States { Down, Fire, Up }
@@ -18,6 +21,8 @@ public class Gun : MonoBehaviour
 
     public delegate void triggerDelegate();
     public event triggerDelegate gunFired;
+
+    
 
 
     void Awake()
@@ -35,7 +40,6 @@ public class Gun : MonoBehaviour
         SpriteRenderer rend = attackBarObject.AddComponent<SpriteRenderer>();
         rend.sprite = attackBarSprite;
         rend.sortingLayerID = transform.root.GetComponentInChildren<SpriteRenderer>().sortingLayerID;
-    
     
 	}
 
@@ -73,8 +77,37 @@ public class Gun : MonoBehaviour
 
         if (transform.root.GetComponent<PlayerControl>().facingRight)
         {
-            Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, transform.rotation, this.gameObject.transform) as Rigidbody2D;
-            bulletInstance.velocity = transform.right.normalized * speed;
+            if (gameManager.GetSelectedWeapon() == 0)
+            {
+                Rigidbody2D bulletInstance1 = Instantiate(weapons[0],
+                                                                    transform.position,
+                                                                    transform.rotation,
+                                                                    this.gameObject.transform) as Rigidbody2D;
+                bulletInstance1.transform.Rotate(0, 0, 5);
+                bulletInstance1.velocity = bulletInstance1.transform.right * speed;
+
+                Rigidbody2D bulletInstance2 = Instantiate(weapons[0],
+                                                    transform.position,
+                                                    transform.rotation,
+                                                    this.gameObject.transform) as Rigidbody2D;
+                bulletInstance2.velocity = transform.right.normalized * speed;
+
+                Rigidbody2D bulletInstance3 = Instantiate(weapons[0],
+                                                    transform.position,
+                                                    transform.rotation,
+                                                    this.gameObject.transform) as Rigidbody2D;
+                bulletInstance3.transform.Rotate(0, 0, -5);
+                bulletInstance3.velocity = bulletInstance3.transform.right.normalized * speed;
+            }
+            else
+            {
+                Rigidbody2D bulletInstance = Instantiate(weapons[gameManager.GetSelectedWeapon()],
+                                                     transform.position,
+                                                     transform.rotation,
+                                                     this.gameObject.transform) as Rigidbody2D;
+                bulletInstance.velocity = transform.right.normalized * speed;
+            }
+
             
 
             targetSpeed = speed = 0;
@@ -83,9 +116,25 @@ public class Gun : MonoBehaviour
         }
         else
         {
-            Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, transform.rotation, this.gameObject.transform) as Rigidbody2D;
-            bulletInstance.velocity = transform.right.normalized * -speed;
-           
+            int randomWeapon = Random.Range(0, 3);
+            if (randomWeapon == 0)
+            {
+                Rigidbody2D bulletInstance1 = Instantiate(weapons[0],transform.position,transform.rotation,this.gameObject.transform) as Rigidbody2D;
+                bulletInstance1.transform.Rotate(0, 0, 5);
+                bulletInstance1.velocity = bulletInstance1.transform.right * -speed;
+
+                Rigidbody2D bulletInstance2 = Instantiate(weapons[0], transform.position,transform.rotation,this.gameObject.transform) as Rigidbody2D;
+                bulletInstance2.velocity = transform.right.normalized * -speed;
+
+                Rigidbody2D bulletInstance3 = Instantiate(weapons[0],transform.position,transform.rotation,this.gameObject.transform) as Rigidbody2D;
+                bulletInstance3.transform.Rotate(0, 0, -5);
+                bulletInstance3.velocity = bulletInstance3.transform.right.normalized * -speed;
+            }
+            else
+            {
+                Rigidbody2D bulletInstance = Instantiate(weapons[randomWeapon],transform.position,transform.rotation,this.gameObject.transform) as Rigidbody2D;
+                bulletInstance.velocity = transform.right.normalized * -speed;
+            }
 
             targetSpeed = speed = 0;
             attackBar.localScale = Vector3.up * 2 + Vector3.forward;
@@ -98,15 +147,52 @@ public class Gun : MonoBehaviour
 
     }
 
-
-
     public void Fire(float targetSpeed)
     {
         this.targetSpeed = targetSpeed;
         speed = targetSpeed;
         Fire();
-       
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//            if (transform.root.GetComponent<PlayerControl>().facingRight)
+//        {
+//            Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, transform.rotation, this.gameObject.transform) as Rigidbody2D;
+//    bulletInstance.velocity = transform.right.normalized* speed;
+
+
+//    targetSpeed = speed = 0;
+//            attackBar.localScale = Vector3.up* 2 + Vector3.forward;
+
+//        }
+//        else
+//        {
+//            Rigidbody2D bulletInstance = Instantiate(rocket, transform.position, transform.rotation, this.gameObject.transform) as Rigidbody2D;
+//bulletInstance.velocity = transform.right.normalized* -speed;
+           
+
+//            targetSpeed = speed = 0;
+//            attackBar.localScale = Vector3.up* 2 + Vector3.forward;
+//        }
+
+
+
+
+
+
+
 
 
 }//Gun
